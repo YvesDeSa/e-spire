@@ -5,11 +5,14 @@ import {
   Get, 
   Param, 
   UseInterceptors, 
-  ClassSerializerInterceptor 
+  ClassSerializerInterceptor, 
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -21,9 +24,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getProfile(@Request() req) {
+    return this.usersService.findById(req.user.userId);
+  }
+
   @Get(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
-  async findOne(@Param('id') id: string): Promise<User | null> {
+  async findOne(@Param('id') id: string) {
     return this.usersService.findById(id); 
   }
 }
