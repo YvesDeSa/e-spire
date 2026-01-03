@@ -11,9 +11,12 @@ model User {
   id           String   @id @default(uuid())
   email        String   @unique
   name         String
-  passwordHash String   @map("password_hash") // Snake_case no banco
+  passwordHash String?  @map("password_hash") 
+  googleId     String?  @unique @map("google_id")
+  avatarUrl    String?  @map("avatar_url")
+  
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  @@map("users") 
+  @@map("users")
 }
