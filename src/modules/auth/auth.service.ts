@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { OAuth2Client } from 'google-auth-library';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) {
     this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
+
+  private generateToken(user: any) {
+    const payload = { sub: user.id, email: user.email };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+      },
+    };
   }
 
   async login(loginDto: LoginDto) {
@@ -29,15 +43,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    return {
-      accessToken: this.jwtService.sign({ sub: user.id, email: user.email }),
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
-      },
-    };
+    return this.generateToken(user);
   }
 
 
@@ -71,18 +77,15 @@ export class AuthService {
         await this.usersService.updateGoogleId(user.id, googleId);
       }
 
-      return {
-        accessToken: this.jwtService.sign({ sub: user.id, email: user.email }),
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          avatarUrl: user.avatarUrl,
-        },
-      };
+      return this.generateToken(user);
     } catch (error) {
      
       throw new UnauthorizedException('Falha na autenticação Google');
     }
+  }
+
+  async register(createUserDto: CreateUserDto) {
+    const newUser = await this.usersService.create(createUserDto);
+    return this.generateToken(newUser);
   }
 }

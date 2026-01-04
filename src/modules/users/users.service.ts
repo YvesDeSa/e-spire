@@ -18,7 +18,6 @@ export class UsersService {
     return this.usersRepository.create({ ...createUserDto, password: passwordHash });
   }
 
-
   async createFromSocial(data: CreateUserSocialDto) {
     return this.usersRepository.create(data);
   }
