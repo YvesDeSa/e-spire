@@ -7,4 +7,5 @@ export abstract class IUsersRepository {
   abstract findByEmail(email: string): Promise<User | null>;
   abstract findById(id: string): Promise<User | null>;
   abstract updateGoogleId(userId: string, googleId: string): Promise<User>;
+  abstract updateFacebookId(userId: string, facebookId: string): Promise<User>;
 }

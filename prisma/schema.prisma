@@ -13,6 +13,7 @@ model User {
   name         String
   passwordHash String?  @map("password_hash") 
   googleId     String?  @unique @map("google_id")
+  facebookId  String?   @unique @map("facebook_id")
   avatarUrl    String?  @map("avatar_url")
   
   createdAt    DateTime @default(now()) @map("created_at")

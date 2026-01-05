@@ -34,4 +34,8 @@ export class UsersService {
     return this.usersRepository.updateGoogleId(userId, googleId);
   }
 
+  async updateFacebookId(userId: string, facebookId: string) {
+    return this.usersRepository.updateFacebookId(userId, facebookId);
+  } 
+
 }

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -87,5 +87,48 @@ export class AuthService {
   async register(createUserDto: CreateUserDto) {
     const newUser = await this.usersService.create(createUserDto);
     return this.generateToken(newUser);
+  }
+
+  async loginWithFacebook(token: string) {
+    try {
+      const result = await fetch(
+        `https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${token}`
+      );
+
+      const data = await result.json();
+
+      if (!result.ok || data.error) {
+        throw new UnauthorizedException('Token do Facebook inválido');
+      }
+
+      const email = data.email;
+      const name = data.name;
+      const facebookId = data.id;
+      const avatarUrl = data.picture?.data?.url;
+
+      if (!email) {
+        throw new UnauthorizedException('O Facebook não forneceu o email (obrigatório).');
+      }
+      
+      let user = await this.usersService.findByEmail(email);
+
+      if (!user) {
+        user = await this.usersService.createFromSocial({
+          email,
+          name,
+          facebookId, 
+          avatarUrl,
+        });
+      } else if (!user.facebookId) {
+        await this.usersService.updateFacebookId(user.id, facebookId);
+      }
+
+      return this.generateToken(user);
+
+    } catch (error) {
+      console.error(error); 
+      if (error instanceof UnauthorizedException) throw error;
+      throw new InternalServerErrorException('Erro ao conectar com Facebook');
+    }
   }
 }

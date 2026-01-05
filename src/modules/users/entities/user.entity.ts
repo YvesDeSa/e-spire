@@ -11,6 +11,9 @@ export class User {
   @Exclude()
   googleId?: string | null;
 
+  @Exclude()
+  facebookId?: string | null;
+
   avatarUrl?: string | null;
   
   createdAt: Date;
