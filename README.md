@@ -1,4 +1,4 @@
-# e-spire
+# ⚡ E-Spire
 
 ## 📖 Sobre
 O **e-spire** é uma API projetada para conectar pessoas através de atividades físicas e hobbies em comum, facilitando a busca por grupos específicos, como praticantes de yoga ou corrida. A plataforma é focada na experiência do usuário e na construção de comunidades, contando com integração de mapas para geolocalização de eventos, um feed de atualizações e um sistema de recomendações personalizadas.
